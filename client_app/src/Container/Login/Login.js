@@ -8,12 +8,14 @@ const Login = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const handleUserLogin = () => {
-    // dispatch(
-    //   login({
-    //     email,
-    //     password,
-    //   })
-    // );
+    dispatch(
+      login({
+        email,
+        password,
+      })
+    );
+  };
+  const refresh = () => {
     dispatch(refreshToken());
   };
   return (
@@ -91,6 +93,7 @@ const Login = () => {
                           <button
                             type="button"
                             className="btn gradient-custom-1"
+                            onClick={refresh}
                           >
                             Đăng kí
                           </button>
