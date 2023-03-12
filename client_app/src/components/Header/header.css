@@ -1,0 +1,55 @@
+.logo {
+  background-clip: text !important;
+  font-family: "Playball", cursive;
+  font-weight: 400;
+  font-size: 38px;
+  color: transparent;
+  background: conic-gradient(
+    from 90deg at 50% 50%,
+    rgba(255, 42, 0, 1) 21%,
+    rgba(202, 212, 0, 1) 99%
+  );
+}
+
+.header-wrapper {
+  border-bottom: 2px solid var(--box-shadow);
+  background: var(--primary-color);
+}
+
+.header__cart-quantity {
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  padding: 2px 8px;
+}
+
+.mobile__item {
+  display: none !important;
+}
+.tablet__item {
+  display: none !important;
+}
+
+@media screen and (max-width: 575px) {
+  .mobile__item {
+    display: block !important;
+  }
+  .pc_item {
+    display: none !important;
+  }
+
+  .search-btn:hover {
+    border: 1px solid var(--primary-color);
+  }
+}
+
+@media (min-width: 576px) and (max-width: 820px) {
+  .tablet__item {
+    display: block !important;
+    color: #fff !important;
+  }
+  .pc_item {
+    display: none !important;
+  }
+}

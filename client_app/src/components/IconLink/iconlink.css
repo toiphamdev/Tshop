@@ -1,0 +1,19 @@
+.linkicon__wrapper {
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
+
+.linkicon__title {
+  margin-left: 0.5rem;
+  font-size: 14px;
+}
+
+@media screen and (max-width: 575px) {
+  .linkicon__wrapper {
+    color: #000;
+  }
+}
+
+@media screen and (max-width: 820px) {
+}

@@ -1,0 +1,13 @@
+.subnav__wrapper {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  background-color: #fff;
+  color: black;
+  border-bottom: 2px solid var(--box-shadow);
+}
+@media screen and (max-width: 575px) {
+  .subnav__wrapper {
+    display: none;
+  }
+}

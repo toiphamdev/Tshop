@@ -1,0 +1,40 @@
+a {
+  text-decoration: none !important;
+}
+.crumb__animate {
+  position: relative;
+}
+
+.breadcrumb {
+  margin-bottom: 0 !important;
+}
+
+.crumb__animate::after {
+  content: "";
+  height: 2px;
+  background-color: blue;
+  position: absolute;
+  left: 0;
+  width: 0px;
+  bottom: 0;
+  transition: all 0.5s linear;
+}
+.crumb__animate:hover::after {
+  position: absolute;
+  animation: lefttorightline 1s;
+  animation-fill-mode: forwards;
+  /* background-color: red; */
+}
+/* .cumb__animate > a span
+{
+    background-color: red;
+} */
+
+@keyframes lefttorightline {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

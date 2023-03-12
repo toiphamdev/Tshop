@@ -1,0 +1,44 @@
+.tooltip__span {
+  display: none;
+  color: #fff;
+  min-width: 100px;
+  background-color: #999;
+  position: absolute;
+  border-radius: 4px;
+  text-align: center;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip__span::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #999;
+}
+
+.digitalitem__wrapper:hover .tooltip__span {
+  display: block;
+}
+
+.digitalitem__title {
+  font-size: 16px;
+  color: #6c757d;
+  margin-left: 4px;
+}
+.digitalitem__wrapper {
+  display: flex;
+  align-items: center;
+  margin: 4px;
+}
+
+@media screen and (max-width: 575px) {
+  .digitalitem__title {
+    font-size: 14px;
+  }
+}
