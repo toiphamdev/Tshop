@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../redux/actions/authActions";
+import { login, refreshToken } from "../../redux/actions/authActions";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,12 +8,13 @@ const Login = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const handleUserLogin = () => {
-    dispatch(
-      login({
-        email,
-        password,
-      })
-    );
+    // dispatch(
+    //   login({
+    //     email,
+    //     password,
+    //   })
+    // );
+    dispatch(refreshToken());
   };
   return (
     <>
@@ -34,6 +35,9 @@ const Login = () => {
                       <p className="text-muted">
                         Đăng nhập để bắt đầu vào trang:
                       </p>
+                      {auth.error && (
+                        <p className="text-danger">{auth.error}</p>
+                      )}
                       <form>
                         <div className="form-outline mb-4">
                           <label

@@ -14,7 +14,9 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
         next();
       }
     } catch (error) {
-      throw new Error("Not authorization token expired. Pleases login agian.");
+      res.status(501).json({
+        errMessage: "Not authorization token expired. Pleases login again.",
+      });
     }
   } else {
     throw new Error("This isn't token attached to headers");
