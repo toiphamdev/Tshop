@@ -1,4 +1,4 @@
-const createListCategory = (inputObject) => {
+export const createListCategory = (inputObject) => {
   const outputArray = [];
 
   // Create a dictionary to hold references to each object by their id
@@ -15,7 +15,7 @@ const createListCategory = (inputObject) => {
       const parent = objectDictionary[parentId];
 
       if (parent !== undefined) {
-        parent.children.push(object);
+        parent.children.push({ ...object, parentSlug: parent.slug });
       }
     } else {
       outputArray.push(object);

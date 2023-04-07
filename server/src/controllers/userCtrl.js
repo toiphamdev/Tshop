@@ -26,10 +26,11 @@ const createUser = asyncHandler(async (req, res) => {
 //login user
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email);
   //check user is exist or not
   const findUser = await User.findOne({ email });
   if (findUser && (await findUser.isPasswordMatched(password))) {
-    const refreshToken = generateToken(findUser?._id);
+    const refreshToken = generateToken(findUser?._id, "1d");
     const updateuser = await User.findByIdAndUpdate(
       findUser?._id,
       {
@@ -38,7 +39,6 @@ const loginUser = asyncHandler(async (req, res) => {
       { new: true }
     );
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
     res.json({
@@ -71,7 +71,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
       { new: true }
     );
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      // httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
     res.json({
@@ -256,7 +256,7 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   try {
     const token = await user.createPasswordResetToken();
     await user.save();
-    const resetURL = `Click vào link dưới đây để lấy lại mật khẩu của bạn.Link này sẽ đóng sau 10 phút. <a href='${process.env.API}/api/user/reset-password/${token}'>Click here</a>`;
+    const resetURL = `Click vào link dưới đây để cài lại mật khẩu của bạn.Link này sẽ đóng sau 10 phút. <a href='${process.env.CLIENT}/user/reset-password/${token}'>Click here</a>`;
     const data = {
       to: email,
       subject: "Lấy lại mật khẩu",
@@ -321,22 +321,26 @@ const userCart = asyncHandler(async (req, res) => {
   try {
     let products = [];
     const user = await User.findById(_id);
-    const alreadyCart = await Cart.findOne({ orderby: user._id });
-    if (alreadyCart) {
-      alreadyCart.remove();
-    }
+    const alreadyCart = await Cart.deleteMany({ orderby: user._id });
     for (let i = 0; i < cart.length; i++) {
       let object = {};
       object.product = cart[i]._id;
       object.count = cart[i].count;
-      object.color = cart[i].color;
-      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
+      let getPrice = await Product.findById(cart[i]._id)
+        .select("price discount")
+        .exec();
       object.price = getPrice.price;
+      object.discount = getPrice.discount;
       products.push(object);
     }
     let cartTotal = 0;
     for (let i = 0; i < products.length; i++) {
-      cartTotal = cartTotal + products[i].price * products[i].count;
+      cartTotal = Math.floor(
+        cartTotal +
+          products[i].price *
+            products[i].count *
+            ((100 - products[i].discount) / 100)
+      );
     }
     let newCart = await new Cart({
       products,
@@ -379,7 +383,12 @@ const applyCoupon = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   try {
-    const validCoupon = await Coupon.findOne({ name: coupon });
+    const currentDateTime = new Date();
+    const validCoupon = await Coupon.findOne({
+      name: coupon,
+      expiry: { $gt: currentDateTime },
+    });
+
     if (validCoupon === null) {
       throw new Error("Invalid Coupon");
     }
@@ -461,6 +470,16 @@ const getOrders = asyncHandler(async (req, res) => {
   }
 });
 
+const getAllOrders = asyncHandler(async (req, res) => {
+  const { status } = req.query;
+  try {
+    const userOrders = await Order.find({ status }).populate("orderby").exec();
+    res.json(userOrders);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const { id } = req.params;
@@ -482,6 +501,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 module.exports = {
   userCart,
+  getAllOrders,
   updateOrderStatus,
   createUser,
   forgotPasswordToken,

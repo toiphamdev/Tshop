@@ -19,7 +19,9 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       });
     }
   } else {
-    throw new Error("This isn't token attached to headers");
+    res
+      .status(501)
+      .json({ errMessage: "This isn't token attached to headers" });
   }
 });
 //Check admin role

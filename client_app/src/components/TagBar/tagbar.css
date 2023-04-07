@@ -1,0 +1,37 @@
+.tag-bar-container {
+  width: 100%;
+  /* overflow: hidden; */
+  /* position: relative; */
+  top: 0;
+  height: 90px;
+  position: sticky;
+}
+
+.tag-bar {
+  position: sticky;
+  top: 0;
+  background-color: #ccc;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  z-index: 3;
+}
+
+.tag {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  min-width: 190px;
+  text-align: center;
+}
+
+.tag:hover {
+  background-color: #999;
+  color: #fff;
+}
+
+.tag.active {
+  background-color: #f78c38;
+  color: #fff;
+}

@@ -4,6 +4,9 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const fs = require("fs");
 const validateMongoDbId = require("../utils/validateMongodbId");
+const paginate = require("express-paginate");
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 const {
   cloudinaryDeleteImg,
   cloudinaryUploadImg,
@@ -51,10 +54,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 //get product by id
 const getaProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDbId(id);
+  const { slug } = req.params;
   try {
-    const findProduct = await Product.findById(id);
+    const findProduct = await Product.findOne({ slug: slug });
     res.json(findProduct);
   } catch (error) {
     throw new Error(error);
@@ -62,15 +64,22 @@ const getaProduct = asyncHandler(async (req, res) => {
 });
 //get all product
 const getAllProduct = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const tagsToSearch = q ? q.split(" ") : [];
   try {
     // Filtering
     const queryObj = { ...req.query };
-    const excludeFields = ["page", "sort", "limit", "fields"];
+    // console.log(queryObj.price)
+    const excludeFields = ["page", "sort", "limit", "fields", "q"];
     excludeFields.forEach((el) => delete queryObj[el]);
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/(gte|gt|lte|lt)/gi, (match) => `$${match}`);
-
-    let query = Product.find(JSON.parse(queryStr));
+    let query = q
+      ? Product.find({
+          ...JSON.parse(queryStr),
+          tags: { $in: tagsToSearch },
+        })
+      : Product.find({ ...JSON.parse(queryStr) });
 
     // Sorting
 
@@ -92,17 +101,33 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     // pagination
 
-    let totalPage = 0;
     const page = req.query.page;
     const limit = req.query.limit;
     const skip = (page - 1) * limit;
     query = query.skip(skip).limit(limit);
-    if (req.query.page) {
-      const productCount = await Product.countDocuments();
-      if (skip >= productCount) throw new Error("This Page does not exists");
-    }
-    const product = await query;
-    res.json({ product, totalPage });
+    // res.json({ condition });
+    query.exec(async (err, products) => {
+      if (err) {
+        // Xử lý lỗi
+        throw new Error(err);
+      } else {
+        const findCountQuery = q
+          ? {
+              ...JSON.parse(queryStr),
+              tags: { $in: tagsToSearch },
+            }
+          : { ...JSON.parse(queryStr) };
+        const itemCount = await Product.countDocuments(findCountQuery);
+        const pageCount = Math.ceil(itemCount / req.query.limit);
+
+        res.json({
+          products,
+          pageCount,
+          itemCount,
+          activePage: req.query.page,
+        });
+      }
+    });
   } catch (error) {
     throw new Error(error);
   }
@@ -154,7 +179,11 @@ const ratingProduct = asyncHandler(async (req, res) => {
           ratings: { $elemMatch: alreadyRated },
         },
         {
-          $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+          $set: {
+            "ratings.$.star": star,
+            "ratings.$.comment": comment,
+            "ratings.$.updatedAt": Date.now(),
+          },
         },
         {
           new: true,
@@ -168,6 +197,7 @@ const ratingProduct = asyncHandler(async (req, res) => {
             ratings: {
               star: star,
               comment: comment,
+              updatedAt: Date.now(),
               postedby: _id,
             },
           },
@@ -203,14 +233,24 @@ const uploadProductImages = asyncHandler(async (req, res) => {
     const uploader = (path) => cloudinaryUploadImg(path, "images");
     const urls = [];
     const files = req.files;
-    for (let file of files) {
-      const { path } = file;
+    for (let i = 0; i < files.length; i++) {
+      const { path } = files[i];
       const newPath = await uploader(path);
       urls.push(newPath);
-      // fs.unlinkSync(path);
+      fs.unlinkSync(path);
     }
-    const images = urls.map((file) => file);
+    const images = urls.map((file) => {
+      return file;
+    });
 
+    const product = await Product.findById(id);
+    if (product.images.length > 0) {
+      for (let image of product.images) {
+        await cloudinaryDeleteImg(image.public_id);
+      }
+    }
+    product.images = [...images];
+    product.save();
     res.json(images);
   } catch (error) {
     throw new Error(error);
@@ -227,6 +267,73 @@ const deleteProductImage = asyncHandler(async (req, res) => {
   }
 });
 
+const getRatingComment = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    validateMongoDbId(id);
+    const page = +req.query.page;
+    const limit = +req.query.limit;
+    if ((!page, !limit)) throw new Error("Missing required parameter...");
+    const skip = (page - 1) * limit;
+    Product.aggregate([
+      // Lấy tài liệu có _id bằng ObjectId("6140d4a4a4eb1db98f962e47")
+      { $match: { _id: ObjectId(id) } },
+      // Tách mảng 'ratings' thành các tài liệu riêng biệt
+      { $unwind: "$ratings" },
+      // Lookup để populate thông tin người dùng và chỉ lấy các trường cần thiết
+      {
+        $lookup: {
+          from: "users",
+          localField: "ratings.postedby",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [
+            { $project: { _id: 1, firstname: 1, lastname: 1, email: 1 } },
+          ],
+        },
+      },
+      // Chọn trường 'ratings' và trường 'user' sau khi được populate
+      {
+        $project: {
+          _id: 0,
+          comment: "$ratings.comment",
+          star: "$ratings.star",
+          updatedAt: "$ratings.updatedAt",
+          user: { $arrayElemAt: ["$user", 0] },
+        },
+      },
+      // Đếm số lượng phần tử trong mảng 'ratings'
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+          ratings: { $push: "$$ROOT" },
+        },
+      },
+      // Chọn các trường cần thiết và tính toán pageCount
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+          ratings: {
+            $slice: ["$ratings", skip, limit],
+          },
+          pageCount: { $ceil: { $divide: ["$count", limit] } },
+        },
+      },
+    ]).exec((err, ratings) => {
+      if (err) {
+        // Xử lý lỗi
+        throw new Error(err);
+      } else {
+        res.json(ratings[0]);
+      }
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createProduct,
   getaProduct,
@@ -237,4 +344,5 @@ module.exports = {
   ratingProduct,
   deleteProductImage,
   uploadProductImages,
+  getRatingComment,
 };

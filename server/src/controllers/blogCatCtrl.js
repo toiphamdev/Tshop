@@ -1,10 +1,16 @@
 const BCategory = require("../models/blogCatModel");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
+const { default: slugify } = require("slugify");
+const convertSlug = require("../utils/convertSlug");
 
 const createCategory = asyncHandler(async (req, res) => {
+  const { title } = req.body;
   try {
-    const newCat = await BCategory.create(req.body);
+    const newCat = await BCategory.create({
+      ...req.body,
+      slug: slugify(convertSlug(title)),
+    });
     res.json(newCat);
   } catch (error) {
     throw new Error(error);
@@ -12,11 +18,16 @@ const createCategory = asyncHandler(async (req, res) => {
 });
 const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { title } = req.body;
   validateMongoDbId(id);
   try {
-    const updatedCat = await BCategory.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const updatedCat = await BCategory.findByIdAndUpdate(
+      id,
+      { ...req.body, slug: slugify(convertSlug(title)) },
+      {
+        new: true,
+      }
+    );
     res.json(updatedCat);
   } catch (error) {
     throw new Error(error);

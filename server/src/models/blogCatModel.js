@@ -9,6 +9,12 @@ var blogcategorySchema = new mongoose.Schema(
       unique: true,
       index: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
   },
   {
     timestamps: true,

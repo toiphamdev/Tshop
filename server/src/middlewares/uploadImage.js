@@ -26,20 +26,43 @@ const uploadPhoto = multer({
   limits: { fileSize: 1000000 },
 });
 
-const productImgResize = async (req, res, next) => {
+function resizeAndUploadImages(req, res, next) {
+  // Kiểm tra xem request có chứa file ảnh không
   if (!req.files) return next();
-  await Promise.all(
-    req.files.map(async (file) => {
-      await sharp(file.path)
-        .resize(300, 300)
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/images/products/${file.filename}`);
-      fs.unlinkSync(`public/images/products/${file.filename}`);
+
+  const imageBuffers = [];
+
+  // Resize ảnh và lưu vào buffer
+  const resizeImage = (file) => {
+    const inputPath = file.path;
+
+    return sharp(inputPath).resize(500, 500).toBuffer();
+  };
+
+  // Lưu các buffer vào mảng
+  Promise.all(req.files.map(resizeImage))
+    .then((buffers) => {
+      imageBuffers.push(...buffers);
+
+      // Upload nhiều ảnh lên Cloudinary
+      cloudinary.uploader
+        .upload_stream_multiple({ folder: "uploads" }, (err, result) => {
+          if (err) return next(err);
+
+          // Cập nhật lại req.files với thông tin của các ảnh đã được upload lên Cloudinary
+          req.files = result.map((r) => {
+            return {
+              filename: r.public_id,
+              path: r.secure_url,
+            };
+          });
+
+          next();
+        })
+        .end(imageBuffers);
     })
-  );
-  next();
-};
+    .catch((err) => next(err));
+}
 
 const blogImgResize = async (req, res, next) => {
   if (!req.files) return next();
@@ -55,4 +78,4 @@ const blogImgResize = async (req, res, next) => {
   );
   next();
 };
-module.exports = { uploadPhoto, productImgResize, blogImgResize };
+module.exports = { uploadPhoto, resizeAndUploadImages, blogImgResize };

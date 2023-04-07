@@ -8,8 +8,18 @@ const BreadCrumb = ({ cumbArr = [], ...props }) => {
       {cumbArr.length > 0 &&
         cumbArr.map((item, index) => {
           return (
-            <Breadcrumb.Item key={index} href={item.path}>
-              <span className="crumb__animate position-relative">
+            <Breadcrumb.Item
+              key={index}
+              href={item.path}
+              className={item.path === null ? "text-muted" : ""}
+            >
+              <span
+                className={
+                  item.path === null
+                    ? "text-muted"
+                    : "crumb__animate position-relative"
+                }
+              >
                 {item.title}
               </span>
             </Breadcrumb.Item>

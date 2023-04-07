@@ -9,6 +9,7 @@ export const login = (data) => {
       const res = await loginService(data);
       if (res && res.status === 200) {
         localStorage.setItem("auth", JSON.stringify(res.data));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
         dispatch({
           type: authConstants.LOGIN_SUCCESS,
           payload: { ...res.data },
@@ -30,7 +31,7 @@ export const refreshToken = () => {
     dispatch({ type: authConstants.REFRESH_TOKEN_REQUEST });
     try {
       const res = await resfreshTokenService();
-      if (res && res.status === 201) {
+      if (res && res.status === 200) {
         dispatch({
           type: authConstants.REFRESH_TOKEN_SUCCESS,
           payload: { ...res.data },

@@ -108,6 +108,19 @@
   display: flex;
 }
 
+.banner {
+  margin: 0 !important;
+}
+
+.tab__container {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #fff;
+  -webkit-box-shadow: 0 0 3px 0 #dee2e6;
+  box-shadow: 0 0 3px 0 #dee2e6;
+  margin-bottom: 1rem;
+}
+
 @media screen and (max-width: 992px) {
   .main__banner > img {
     padding: 1rem;

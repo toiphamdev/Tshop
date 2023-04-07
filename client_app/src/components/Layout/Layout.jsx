@@ -5,11 +5,11 @@ import Header from "../Header/Header";
 
 const Layout = () => {
   return (
-    <>
+    <div style={{ maxWidth: "100vw" }}>
       <Header />
       <Outlet />
       <Footer />
-    </>
+    </div>
   );
 };
 

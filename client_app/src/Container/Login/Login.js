@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login, refreshToken } from "../../redux/actions/authActions";
+import { Link, useNavigate } from "react-router-dom";
+import ScrollToTop from "../../components/ScrollToTop";
+import { login, refreshToken } from "../../redux/actions";
+import "./login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (auth.authenticate) {
+      navigate("/");
+    }
+  }, [auth.authenticate]);
   const handleUserLogin = () => {
     dispatch(
       login({
@@ -20,6 +29,7 @@ const Login = () => {
   };
   return (
     <>
+      <ScrollToTop />
       <section
         className="d-flex align-items-center"
         style={{ backgroundColor: "#eee", minHeight: "100vh" }}
@@ -83,9 +93,13 @@ const Login = () => {
                           >
                             Đăng nhập
                           </button>
-                          <a className="text-muted ms-3" href="#!">
+                          <Link
+                            to="/forgot-password"
+                            className="text-muted ms-3"
+                            href="#!"
+                          >
                             Quên mật khẩu
-                          </a>
+                          </Link>
                         </div>
 
                         <div className="d-flex align-items-center justify-content-center pb-4">
@@ -93,7 +107,7 @@ const Login = () => {
                           <button
                             type="button"
                             className="btn gradient-custom-1"
-                            onClick={refresh}
+                            // onClick={refresh}
                           >
                             Đăng kí
                           </button>
@@ -101,7 +115,7 @@ const Login = () => {
                       </form>
                     </div>
                   </div>
-                  <div className="col-lg-6 d-flex align-items-center gradient-custom-2">
+                  <div className="col-lg-6 d-flex align-items-center gradient-custom-2 hide__mobile">
                     <div className="text-white px-3 py-4 p-md-5 mx-md-4">
                       <h4 className="mb-4">We are more than just a company</h4>
                       <p className="small mb-0">

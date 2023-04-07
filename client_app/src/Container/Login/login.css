@@ -1,0 +1,5 @@
+@media screen and (max-width: 575px) {
+  .hide__mobile {
+    display: none !important;
+  }
+}

@@ -6,12 +6,13 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
+// const session = require("express-session");
 
 const { notFound, errHandler } = require("./middlewares/errorHandler");
 const PORT = process.env.PORT || 8080;
 
 //connect to database
-connectDB();
+connectDB({ origin: "http://localhost:4000", credential: true });
 
 //declare routes
 const authRoute = require("./routes/authRoute");
@@ -29,6 +30,17 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+// app.use(
+//   session({
+//     secret: "your-secret-key",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       maxAge: 3600000, // Thời gian sống của cookie (mili giây)
+//       httpOnly: true,
+//     },
+//   })
+// );
 //use route
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);

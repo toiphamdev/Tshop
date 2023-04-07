@@ -1,0 +1,68 @@
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.ant-layout {
+  height: 100vh;
+}
+.logo {
+  height: 2rem;
+}
+.logo > div {
+  height: 100%;
+  color: transparent;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  background-color: orangered;
+  background-clip: text;
+}
+.sm-logo {
+  transition: 0.3s;
+  display: none;
+}
+.lg-logo {
+  transition: 0.3s;
+}
+main {
+  overflow-y: auto;
+}
+main::-webkit-scrollbar {
+  width: 0px;
+}
+.ant-layout-sider {
+  flex: 0 0 250px !important;
+  max-width: 250px !important;
+  min-width: 250px !important;
+  width: 250px !important;
+}
+.ant-layout-sider-collapsed {
+  flex: 0 0 80px !important;
+  max-width: 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+}
+.ant-layout-sider-collapsed .sm-logo {
+  display: block;
+}
+.ant-layout-sider-collapsed .lg-logo {
+  display: none;
+}
+main {
+  overflow-y: scroll;
+  background-color: transparent !important;
+}
+.ant-layout-header h5 {
+  line-height: normal;
+  margin: 0;
+}
+.ant-layout-header p {
+  line-height: normal;
+  margin-bottom: 0;
+}
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}

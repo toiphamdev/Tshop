@@ -28,7 +28,7 @@ router.put(
 );
 
 router.get("/get-a-blog/:id", getBlog);
-router.get("/get-all-blogs", getAllBlogs);
+router.get("/get-all-blog", getAllBlogs);
 
 router.delete("/delete-blog/:id", authMiddleware, isAdmin, deleteBlog);
 

@@ -18,11 +18,63 @@ var productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    screen: {
+      type: String,
+    },
+    cpu: {
+      type: String,
+    },
+    ram: {
+      type: String,
+    },
+    hardDrive: {
+      type: String,
+    },
+    rom: {
+      type: String,
+    },
+    rearCamera: {
+      type: String,
+    },
+    selfieCamera: {
+      type: String,
+    },
+    batteryCapacity: {
+      type: String,
+    },
+    sim: {
+      type: String,
+    },
+    graphics: {
+      type: String,
+    },
+    operaSystem: {
+      type: String,
+    },
+    weight: {
+      type: Number,
+    },
+    size: {
+      type: String,
+    },
+    debutYear: {
+      type: String,
+    },
+    origin: {
+      type: String,
+    },
+    discount: {
+      type: Number,
+    },
     price: {
       type: Number,
       required: true,
     },
     category: {
+      type: String,
+      required: true,
+    },
+    type: {
       type: String,
       required: true,
     },
@@ -50,6 +102,7 @@ var productSchema = new mongoose.Schema(
       {
         star: Number,
         comment: String,
+        updatedAt: { type: Date },
         postedby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       },
     ],
@@ -57,6 +110,7 @@ var productSchema = new mongoose.Schema(
       type: String,
       default: 0,
     },
+    tags: [],
   },
   { timestamps: true }
 );

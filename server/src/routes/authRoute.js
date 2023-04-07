@@ -23,6 +23,7 @@ const {
   createOrder,
   getOrders,
   updateOrderStatus,
+  getAllOrders,
 } = require("../controllers/userCtrl");
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 
@@ -37,7 +38,8 @@ router.post("/create-order", authMiddleware, createOrder);
 
 router.get("/all-users", getAllUser);
 router.get("/get-orders", authMiddleware, getOrders);
-router.get("/get-a-user", authMiddleware, isAdmin, getUser);
+router.get("/get-all-order", getAllOrders);
+router.get("/get-a-user", authMiddleware, getUser);
 router.get("/logout", logout);
 router.get("/wishlist", authMiddleware, getWishlist);
 router.get("/get-user-cart", authMiddleware, getUserCart);

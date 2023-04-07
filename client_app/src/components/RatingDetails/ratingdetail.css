@@ -1,0 +1,9 @@
+.progress__bar {
+  width: 100% !important;
+  height: 12px !important;
+}
+.rating__details-wraper span {
+  padding: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}

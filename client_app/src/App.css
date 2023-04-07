@@ -51,3 +51,8 @@
   border: 1px solid #f53d2d !important;
   color: #f53d2d !important;
 }
+
+.tab__active {
+  background-color: #f63;
+  color: #fff;
+}

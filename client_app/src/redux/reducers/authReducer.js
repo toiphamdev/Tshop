@@ -38,6 +38,40 @@ const authReducer = (state = initState, action) => {
       };
       return stateCoppy;
     }
+    case authConstants.REFRESH_TOKEN_REQUEST: {
+      let stateCoppy = {
+        ...state,
+        authenticating: true,
+      };
+      return stateCoppy;
+    }
+    case authConstants.REFRESH_TOKEN_SUCCESS: {
+      const { accessToken } = action.payload;
+      let stateCoppy = {
+        ...state,
+        authenticating: false,
+        token: accessToken,
+      };
+      return stateCoppy;
+    }
+    case authConstants.REFRESH_TOKEN_FAILURE: {
+      const { errMessage } = action.payload;
+      let stateCoppy = {
+        ...state,
+        authenticating: false,
+        error: errMessage,
+      };
+      return stateCoppy;
+    }
+    case authConstants.LOGOUT_SUCCESS: {
+      localStorage.clear();
+      let stateCoppy = {
+        ...state,
+        authenticate: false,
+        user: {},
+      };
+      return stateCoppy;
+    }
     default:
       break;
   }

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -7,11 +9,46 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { BsFillHeartFill, BsSearch } from "react-icons/bs";
 import { FaBalanceScaleRight, FaShoppingCart, FaUser } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { getAllProdCategory } from "../../redux/actions";
+import { createListCategory } from "../../utils";
 import IconLink from "../IconLink/IconLink";
 import SubNav from "../SubNav/SubNav";
 import "./header.css";
 
 const Header = () => {
+  const auth = useSelector((state) => state.auth);
+  const app = useSelector((state) => state.app);
+  const [prodCatArr, setProdCatArr] = useState({});
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getAllProdCategory());
+  }, []);
+  useEffect(() => {
+    setProdCatArr(createListCategory(app.prodCategories));
+  }, [app.prodCategories]);
+  const renderCategories = (categories) => {
+    return (
+      categories.length > 0 &&
+      categories.map((category) => {
+        return (
+          <li className="px-2" key={category._id || category.title}>
+            {category.parentId && category.parentSlug ? (
+              <Link to={`/${category.parentSlug}/${category.slug}`}>
+                {category.title}
+              </Link>
+            ) : (
+              <Link to={`/${category.slug}`}>{category.title}</Link>
+            )}
+            {category.children && category.children.length > 0 ? (
+              <ul>{renderCategories(category.children)}</ul>
+            ) : null}
+          </li>
+        );
+      })
+    );
+  };
   return (
     <>
       <Navbar expand="sm" className="header-wrapper">
@@ -59,12 +96,33 @@ const Header = () => {
                     Danh sách <br /> yêu thích
                   </IconLink>
                 </Nav.Link>
-                <Nav.Link className="pc_item" href="#action1">
-                  <IconLink icon={<FaUser size={"28px"} />}>
-                    Đăng nhập <br />
-                    Tài khoản của tôi
-                  </IconLink>
-                </Nav.Link>
+                <div
+                  className="pc_item d-flex align-items-center"
+                  href="#action1"
+                >
+                  {!auth.authenticate ? (
+                    <IconLink twoLink={true} icon={<FaUser size={"28px"} />}>
+                      <Link className="link" to="/login">
+                        Đăng nhập
+                      </Link>{" "}
+                      <br />
+                      <Link className="link" to="/register">
+                        Đăng kí
+                      </Link>
+                    </IconLink>
+                  ) : (
+                    <IconLink twoLink={true} icon={<FaUser size={"28px"} />}>
+                      <Link
+                        className="link"
+                        to="/login"
+                      >{`${auth.user.firstname} ${auth.user.lastname}`}</Link>{" "}
+                      <br />
+                      <Link className="link" to="/user">
+                        Tài khoản của tôi
+                      </Link>
+                    </IconLink>
+                  )}
+                </div>
                 <Nav.Link className="pc_item" href="#action3">
                   <IconLink icon={<FaShoppingCart size={"28px"} />}>
                     <span className="header__cart-quantity">0</span> <br />
@@ -103,16 +161,7 @@ const Header = () => {
                   className="mobile__item"
                   title="Dropdown"
                   id={`offcanvasNavbarDropdown-expand-sm`}
-                >
-                  <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                  <NavDropdown.Item href="#action4">
-                    Another action
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action5">
-                    Something else here
-                  </NavDropdown.Item>
-                </NavDropdown>
+                ></NavDropdown>
               </Nav>
               {/* mobile items */}
             </Offcanvas.Body>
@@ -121,12 +170,7 @@ const Header = () => {
       </Navbar>
       <SubNav>
         <NavDropdown title="Danh mục sản phẩm">
-          <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-          <NavDropdown.Item href="#action4">Another action</NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item href="#action5">
-            Something else here
-          </NavDropdown.Item>
+          {renderCategories(prodCatArr)}
         </NavDropdown>
         <Nav.Link className="mx-3" href="/">
           Trang chủ
