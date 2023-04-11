@@ -3,8 +3,9 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const EditorMarkdown = ({ placeholder, editorHtml, setEditorHtml }) => {
+  console.log(setEditorHtml);
   const handleChange = useCallback((html) => {
-    setEditorHtml(html);
+    // setEditorHtml(html);
   }, []);
 
   const modules = {
@@ -18,7 +19,7 @@ const EditorMarkdown = ({ placeholder, editorHtml, setEditorHtml }) => {
         { indent: "-1" },
         { indent: "+1" },
       ],
-      ["link", "image", "video"],
+      ["link", "image"],
       ["clean"],
     ],
     clipboard: {

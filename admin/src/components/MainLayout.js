@@ -12,6 +12,8 @@ import { ImBlog } from "react-icons/im";
 import { FaBloggerB, FaClipboardList } from "react-icons/fa";
 import { Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const { Header, Sider, Content } = Layout;
 
@@ -169,6 +171,7 @@ const MainLayout = () => {
           <Outlet />
         </Content>
       </Layout>
+      <ToastContainer />
     </Layout>
   );
 };

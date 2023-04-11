@@ -24,23 +24,14 @@ const brandRoute = require("./routes/brandRoute");
 const couponRoute = require("./routes/couponRoute");
 const colorRoute = require("./routes/colorRoute");
 const enqRoute = require("./routes/enqRoute");
+const uploadRoute = require("./routes/uploadRoute");
 
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use(
-//   session({
-//     secret: "your-secret-key",
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       maxAge: 3600000, // Thời gian sống của cookie (mili giây)
-//       httpOnly: true,
-//     },
-//   })
-// );
+
 //use route
 app.use("/api/user", authRoute);
 app.use("/api/product", productRoute);
@@ -51,6 +42,7 @@ app.use("/api/brand", brandRoute);
 app.use("/api/coupon", couponRoute);
 app.use("/api/color", colorRoute);
 app.use("/api/enq", enqRoute);
+app.use("/api/upload", uploadRoute);
 
 app.use(notFound);
 app.use(errHandler);

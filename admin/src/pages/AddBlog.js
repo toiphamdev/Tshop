@@ -1,49 +1,87 @@
-import React, { useState } from "react";
-import { InboxOutlined } from "@ant-design/icons";
-import { message, Upload } from "antd";
+import React, { useEffect, useState } from "react";
 import EditorMarkdown from "../components/EditorMarkdown";
-const { Dragger } = Upload;
+import Dropzone from "react-dropzone";
+import { useDispatch, useSelector } from "react-redux";
+import { delImg, uploadImg } from "../features/upload/uploadSlice";
+import { Select } from "antd";
+import { buildDataSelect } from "../utils/formatedData";
+import { getBlogCats } from "../features/blogCategory/blogCatSlice";
 
 const AddBlog = () => {
-  const props = {
-    name: "file",
-    multiple: true,
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
-  };
   const [value, setValue] = useState("");
   const [desc, setDesc] = useState("");
+  const imgState = useSelector((state) => state.upload.images);
+  const dispatch = useDispatch();
+  const handleEditorChange = ({ html }) => {
+    console.log("handleEditorChange", html);
+    // Do something...
+  };
+  const onChange = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+  const onSearch = (value) => {
+    console.log("search:", value);
+  };
+  const blogCategories = useSelector(
+    (state) => state.blogCategory.blogCategories
+  );
+  useEffect(() => {
+    dispatch(getBlogCats());
+  }, []);
   return (
     <div>
       <h3>Add Blog</h3>
       <div>
-        <Dragger {...props}>
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">
-            Click or drag file to this area to upload
-          </p>
-          <p className="ant-upload-hint">
-            Support for a single or bulk upload. Strictly prohibited from
-            uploading company data or other banned files.
-          </p>
-        </Dragger>
+        <div className="bg-white border-1 p-5 text-center">
+          <Dropzone
+            onDrop={(acceptedFiles) => dispatch(uploadImg(acceptedFiles))}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p>Drag and drop some files here, or click to select files</p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
+        </div>
+        <div className="showimages d-flex flex-wrap gap-3">
+          {imgState?.map((i, j) => {
+            return (
+              <div className="position-relative" key={j}>
+                <button
+                  type="button"
+                  onClick={() => dispatch(delImg(i.public_id))}
+                  className="btn-close position-absolute"
+                  style={{ top: "10px", right: "10px" }}
+                ></button>
+                <img src={i.url} alt="" width={200} height={200} />
+              </div>
+            );
+          })}
+        </div>
+        <div className="my-3">
+          <Select
+            showSearch
+            style={{ width: 160 }}
+            placeholder="Select blog category"
+            optionFilterProp="children"
+            onChange={onChange}
+            onSearch={onSearch}
+            // defaultValue={enq.status}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={buildDataSelect(blogCategories)}
+          />
+        </div>
         <div className="my-5">
-          <EditorMarkdown editorHtml={desc} setEditorHtml={setDesc} />
+          <EditorMarkdown
+            setEditorHtml={handleEditorChange}
+            editorHtml={desc}
+          />
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ const {
   cloudinaryDeleteImg,
   cloudinaryUploadImg,
 } = require("../utils/cloudinary");
+const { deleteImages } = require("./uploadCtrl");
 //create a new product
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -46,7 +47,12 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const deleteProduct = await Product.findByIdAndDelete(id);
+    const deleteProduct = await Product.findById(id);
+    if (deleteProduct.images.length > 0) {
+      for (let image of deleteProduct.images) {
+        deleteImages(image.public_id);
+      }
+    }
     res.json(deleteProduct);
   } catch (error) {
     throw new Error(error);

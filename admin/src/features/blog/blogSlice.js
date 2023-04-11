@@ -39,7 +39,7 @@ const blogSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = false;
         state.isError = true;
-        state.message = action.error;
+        state.message = action.error.message;
       });
   },
 });

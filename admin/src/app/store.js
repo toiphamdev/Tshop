@@ -7,6 +7,7 @@ import blogReducer from "../features/blog/blogSlice";
 import blogCatReducer from "../features/blogCategory/blogCatSlice";
 import enqReducer from "../features/enquiry/enqSlice";
 import orderReducer from "../features/order/orderSlice";
+import uploadReducer from "../features/upload/uploadSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,5 +18,6 @@ export const store = configureStore({
     blogCategory: blogCatReducer,
     enq: enqReducer,
     order: orderReducer,
+    upload: uploadReducer,
   },
 });

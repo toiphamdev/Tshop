@@ -33,3 +33,12 @@ export const createTreeCategory = (inputObject) => {
   }
   return outputArray;
 };
+
+export const buildDataSelect = (arr = []) => {
+  return arr.map((item) => {
+    return {
+      value: item.slug,
+      label: item.title,
+    };
+  });
+};
