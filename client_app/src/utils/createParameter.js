@@ -1,4 +1,4 @@
-export const createParameter = (brand, price = {}, sort = {}, type) => {
+export const createParameter = (brand, price = {}, sort = {}) => {
   let query = "";
   let parameter = "";
 
@@ -27,20 +27,20 @@ export const createParameter = (brand, price = {}, sort = {}, type) => {
 };
 
 export const getServerQuery = (
-  type = "",
   category = "",
+  brand = "",
   queryBrand = "",
   queryPrice = {},
   querySort = {}
 ) => {
-  let query = `type=${type}`;
-  if (category) {
-    query += "&category=" + category;
+  let query = `category=${category}`;
+  if (brand) {
+    query += "&brand=" + brand;
   }
   if (queryBrand) {
     const arr = queryBrand.split(",");
     for (let i = 0; i < arr.length; i++) {
-      query += "&category=" + arr[i];
+      query += "&brand=" + arr[i];
     }
   }
   if (Object.keys(queryPrice).length > 0) {

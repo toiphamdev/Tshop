@@ -58,11 +58,8 @@ const deleteCategory = asyncHandler(async (req, res) => {
 const getAllCategory = asyncHandler(async (req, res) => {
   try {
     const cat = await PCategory.find();
-    let result = {};
-    for (let item of cat) {
-      result[item._id] = item;
-    }
-    res.json({ category: result });
+
+    res.json(cat);
   } catch (error) {
     throw new Error(error);
   }

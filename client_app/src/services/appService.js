@@ -7,3 +7,11 @@ export const getAllProdCategoryService = async () => {
     return error.response;
   }
 };
+export const getAllBrandService = async () => {
+  try {
+    const res = await axios.get("/brand/get-all-brand");
+    return res;
+  } catch (error) {
+    return error.response;
+  }
+};

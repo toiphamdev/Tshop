@@ -6,10 +6,11 @@ const convertSlug = require("../utils/convertSlug");
 
 const createCategory = asyncHandler(async (req, res) => {
   const { title } = req.body;
+  const slug = title.toLowerCase();
   try {
     const newCat = await BCategory.create({
       ...req.body,
-      slug: slugify(convertSlug(title)),
+      slug: slugify(convertSlug(slug)),
     });
     res.json(newCat);
   } catch (error) {
@@ -19,11 +20,12 @@ const createCategory = asyncHandler(async (req, res) => {
 const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
+  const slug = title.toLowerCase();
   validateMongoDbId(id);
   try {
     const updatedCat = await BCategory.findByIdAndUpdate(
       id,
-      { ...req.body, slug: slugify(convertSlug(title)) },
+      { ...req.body, slug: slugify(convertSlug(slug)) },
       {
         new: true,
       }

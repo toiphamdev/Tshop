@@ -1,51 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { Tree } from "antd";
+import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategories } from "../features/category/categorySlice";
-import { createTreeCategory } from "../utils/formatedData";
-
+import {
+  deleteBlogCat,
+  getBlogCats,
+} from "../features/blogCategory/blogCatSlice";
+import { Link } from "react-router-dom";
+import { BiEdit } from "react-icons/bi";
+import { AiFillDelete } from "react-icons/ai";
+import { toast } from "react-toastify";
+import { deleteCat, getCategories } from "../features/category/categorySlice";
 const CategoryList = () => {
-  const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.categories);
-  const [checkedKeys, setCheckedKeys] = useState([]);
-
-  const onCheck = (checkedKeys, info) => {
-    const { checked, checkedNodes, node } = info;
-    // If a parent node is checked, also check all of its children
-    if (node && node.children) {
-      const childKeys = node.children.map((child) => child.key);
-      if (checked) {
-        setCheckedKeys([...checkedKeys.checked, ...childKeys]);
-      } else {
-        // If all child nodes are unchecked, uncheck the parent node
-        const allUnchecked = checkedNodes.every(
-          (n) => !n.key.startsWith(node.key)
-        );
-        setCheckedKeys(
-          allUnchecked
-            ? checkedKeys.checked.filter((key) => !childKeys.includes(key))
-            : [...checkedKeys.checked]
-        );
-      }
-    } else {
-      // If a child node is checked or unchecked, update the checked keys
-      setCheckedKeys(checkedKeys);
-    }
+  const [flag, setFlag] = useState(false);
+  const [deleteFlag, setDeleteFlag] = useState(false);
+  const dataSource = categories.map((item, index) => {
+    return {
+      key: index,
+      title: item.title,
+      slug: item.slug,
+      action: (
+        <>
+          <Link
+            className="fs-5 text-warning"
+            to={`/admin/category/${item._id}`}
+          >
+            <BiEdit />
+          </Link>
+          <span
+            className="fs-5 text-danger ps-3 "
+            onClick={() => handleDelete(item._id)}
+          >
+            <AiFillDelete />
+          </span>
+        </>
+      ),
+    };
+  });
+  const handleDelete = async (id) => {
+    await dispatch(deleteCat(id));
+    setDeleteFlag(!deleteFlag);
+    setFlag(true);
+    dispatch(getCategories());
   };
+  const { isError, isLoading, isSuccess, message } = useSelector(
+    (state) => state.category
+  );
+
+  useEffect(() => {
+    if (isSuccess && flag && !isLoading) {
+      toast.success(message);
+    }
+    if (isError && flag && !isLoading) {
+      toast.error(message);
+    }
+  }, [isError, isSuccess, deleteFlag]);
+
+  const columns = [
+    {
+      title: "SNo",
+      dataIndex: "key",
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+    },
+    {
+      title: "Slug",
+      dataIndex: "slug",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+    },
+  ];
+  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getCategories());
   }, []);
-
   return (
     <div>
       <h3 className="mb-4">Category List</h3>
-      <Tree
-        treeData={createTreeCategory(categories)}
-        onCheck={onCheck}
-        checkedKeys={checkedKeys}
-        checkStrictly={true}
-        checkable
-      />
+      <Table columns={columns} dataSource={dataSource} />
     </div>
   );
 };

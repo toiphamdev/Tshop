@@ -2,14 +2,15 @@ import { appConstans } from "../constants";
 
 const initState = {
   loading: false,
-  prodCategories: {},
+  prodCategories: [],
+  brands: [],
   error: "",
   cartFlag: false,
 };
 
 const appReducer = (state = initState, action) => {
   switch (action.type) {
-    case appConstans.GET_ALL_PROD_CATEGORIES_REQUEST: {
+    case appConstans.GET_ALL_BRAND_REQUEST: {
       let stateCoppy = {
         ...state,
         loading: true,
@@ -38,6 +39,30 @@ const appReducer = (state = initState, action) => {
         ...state,
       };
       stateCoppy.cartFlag = !state.cartFlag;
+      return stateCoppy;
+    }
+    case appConstans.GET_ALL_BRAND_REQUEST: {
+      let stateCoppy = {
+        ...state,
+        loading: true,
+      };
+      return stateCoppy;
+    }
+    case appConstans.GET_ALL_BRAND_SUCCESS: {
+      let stateCoppy = {
+        ...state,
+        brands: action.payload,
+        loading: false,
+      };
+      return stateCoppy;
+    }
+    case appConstans.GET_ALL_BRAND_FAILURE: {
+      const { errMessage } = action.payload;
+      let stateCoppy = {
+        ...state,
+        loading: false,
+        error: errMessage,
+      };
       return stateCoppy;
     }
 

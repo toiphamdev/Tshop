@@ -8,18 +8,19 @@ const getCategories = async () => {
   );
   return data;
 };
-const createCat = async (cat) => {
+const createCat = async (title) => {
   const { data } = await axios.post(
     `${base_url}/prod-category/create`,
-    { ...cat },
+    { ...title },
     config
   );
   return data;
 };
-const updateCat = async (cat, id) => {
+const updateCat = async (title, id) => {
+  console.log(title, id);
   const { data } = await axios.put(
     `${base_url}/prod-category/update-category/${id}`,
-    cat,
+    { title },
     config
   );
   return data;

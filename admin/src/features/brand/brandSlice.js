@@ -1,50 +1,50 @@
 import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import categoryService from "./categoryService";
+import brandService from "./brandService";
 
 const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: "",
-  categories: [],
+  brands: [],
 };
 
-export const getCategories = createAsyncThunk(
-  "/category/get-all-category",
+export const getBrands = createAsyncThunk(
+  "/brand/get-all-brand",
   async (thunkAPI) => {
     try {
-      return await categoryService.getCategories();
+      return await brandService.getBrands();
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
-export const createCat = createAsyncThunk(
-  "/category/create",
+export const createBrand = createAsyncThunk(
+  "/brand/create",
   async (title, thunkAPI) => {
     try {
-      return await categoryService.createCat({ title });
+      return await brandService.createBrand(title);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
-export const getACategory = createAsyncThunk(
-  "/category/get-category",
+export const getABrand = createAsyncThunk(
+  "/brand/get-brand",
   async (id, thunkAPI) => {
     try {
-      return await categoryService.getACat(id);
+      return await brandService.getABrand(id);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
-export const deleteCat = createAsyncThunk(
-  "/category/delete",
+export const deleteBrand = createAsyncThunk(
+  "/brand/delete",
   async (id, thunkAPI) => {
     try {
-      return await categoryService.deleteCat(id);
+      return await brandService.deleteBrand(id);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -52,93 +52,93 @@ export const deleteCat = createAsyncThunk(
 );
 
 export const resetState = createAction("Reset_all");
-export const updateCat = createAsyncThunk(
-  "/category/update",
+export const updateBrand = createAsyncThunk(
+  "/brand/update",
   async (data, thunkAPI) => {
     try {
-      return await categoryService.updateCat(data.title, data.id);
+      return await brandService.updateBrand(data.title, data.id);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
-const categorySlice = createSlice({
-  name: "category",
+const brandSlice = createSlice({
+  name: "brand",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getCategories.pending, (state) => {
+      .addCase(getBrands.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getCategories.fulfilled, (state, action) => {
+      .addCase(getBrands.fulfilled, (state, action) => {
         state.isError = false;
         state.isSuccess = true;
         state.isLoading = false;
-        state.categories = action.payload;
+        state.brands = action.payload;
       })
-      .addCase(getCategories.rejected, (state, action) => {
+      .addCase(getBrands.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;
         state.message = action.error.message;
       })
-      .addCase(createCat.pending, (state) => {
+      .addCase(createBrand.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createCat.fulfilled, (state, action) => {
+      .addCase(createBrand.fulfilled, (state, action) => {
         state.isError = false;
         state.isSuccess = true;
         state.isLoading = false;
-        state.message = "Create a new category success.";
+        state.message = "Create a new brand success.";
       })
-      .addCase(createCat.rejected, (state, action) => {
+      .addCase(createBrand.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;
-        state.message = "Create a new category failed.";
+        state.message = "Create a new brand failed.";
       })
-      .addCase(updateCat.pending, (state) => {
+      .addCase(updateBrand.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(updateCat.fulfilled, (state, action) => {
+      .addCase(updateBrand.fulfilled, (state, action) => {
         state.isError = false;
         state.isSuccess = true;
         state.isLoading = false;
-        state.message = "Update category success.";
+        state.message = "Update blog category success.";
       })
-      .addCase(updateCat.rejected, (state, action) => {
+      .addCase(updateBrand.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;
-        state.message = "Update  category failed.";
+        state.message = "Update blog category failed.";
       })
-      .addCase(getACategory.pending, (state) => {
+      .addCase(getABrand.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getACategory.fulfilled, (state, action) => {
+      .addCase(getABrand.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
-        state.catName = action.payload.title;
+        state.brandName = action.payload.title;
       })
-      .addCase(getACategory.rejected, (state, action) => {
+      .addCase(getABrand.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;
       })
-      .addCase(deleteCat.pending, (state) => {
+      .addCase(deleteBrand.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteCat.fulfilled, (state, action) => {
+      .addCase(deleteBrand.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
         state.message = "Delete Blog category success...";
       })
-      .addCase(deleteCat.rejected, (state, action) => {
+      .addCase(deleteBrand.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
@@ -148,4 +148,4 @@ const categorySlice = createSlice({
   },
 });
 
-export default categorySlice.reducer;
+export default brandSlice.reducer;

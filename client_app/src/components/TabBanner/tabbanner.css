@@ -1,0 +1,14 @@
+.tab-container {
+  width: calc(100% / 4);
+}
+@media screen and (max-width: 575px) {
+  .tab-container {
+    width: calc(100% / 2);
+  }
+}
+
+@media (min-width: 576px) and (max-width: 768px) {
+  .tab-container {
+    width: calc(100% / 3);
+  }
+}

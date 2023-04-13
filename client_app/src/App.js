@@ -65,11 +65,11 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/compare-product" element={<CompareProduct />} />
           <Route
-            path="/:type/:category/:productSlug"
+            path="/:category/:brand/:productSlug"
             element={<ProductDetail />}
           />
-          <Route path="/:type/:category" element={<ProductFilter />} />
-          <Route path="/:type" element={<ProductFilter />} />
+          <Route path="/:category/:brand" element={<ProductFilter />} />
+          <Route path="/:category" element={<ProductFilter />} />
           <Route path="/cart" element={<Cart />} />
         </Route>
         <Route path="*" element={<NotFound />} />

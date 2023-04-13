@@ -6,7 +6,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 300px;
 }
 .product__card:hover {
   border-top: 1px solid rgba(0, 0, 0, 0.2) !important;
@@ -38,7 +37,7 @@
 .product__card-wrapper {
   text-decoration: none;
   color: black;
-  width: calc(100% / 4);
+  max-width: 300px;
 }
 del {
   color: black;
@@ -128,20 +127,36 @@ del {
   object-fit: contain;
 }
 
+.card__btn {
+  font-size: 12px !important;
+}
+
 @media screen and (max-width: 575px) {
-  .card__btn {
+  .product__card {
+    font-size: 10px !important;
+  }
+  .card-title {
+    font-size: 14px !important;
+  }
+  .current-price {
     font-size: 12px !important;
   }
-  .product__card-wrapper {
-    width: 50%;
+  .card__btn {
+    font-size: 8px !important;
   }
 }
 
 @media (min-width: 576px) and (max-width: 768px) {
-  .card__btn {
-    font-size: 14px !important;
+  .product__card {
+    font-size: 12px !important;
   }
-  .product__card-wrapper {
-    width: calc(100% / 3);
+  .card__btn {
+    font-size: 10px !important;
+  }
+  .card-title {
+    font-size: 16px !important;
+  }
+  .current-price {
+    font-size: 14px !important;
   }
 }

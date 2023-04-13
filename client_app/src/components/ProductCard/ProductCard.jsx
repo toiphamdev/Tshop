@@ -156,7 +156,6 @@ const ProductCard = ({
               to={slug ? `/compare-product?${slug}` : ""}
               className="card__btn btn btn-secondary"
             >
-              {" "}
               SO SÁNH
             </Link>
           </div>

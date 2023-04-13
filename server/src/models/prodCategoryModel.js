@@ -6,13 +6,12 @@ var prodcategorySchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      unique: true,
     },
     slug: {
       type: String,
       required: true,
-    },
-    parentId: {
-      type: mongoose.Schema.Types.ObjectId,
+      unique: true,
     },
   },
   {

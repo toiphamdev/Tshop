@@ -26,7 +26,12 @@ const colorRoute = require("./routes/colorRoute");
 const enqRoute = require("./routes/enqRoute");
 const uploadRoute = require("./routes/uploadRoute");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.CLIENT, process.env.ADMIN],
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -4,12 +4,11 @@ import Select from "react-select";
 import React, { useEffect, useState } from "react";
 import SliderConvert from "../../components/Slider/SliderConvert";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   convertDataSelectFromCat,
   convertSelectedDataCat,
   createParameter,
-  findItemsBySlug,
   getCatFromSlug,
   getSelectedDataFormValue,
   getServerQuery,
@@ -18,17 +17,17 @@ import { priceFilterArr, sortArr } from "./filterConstant";
 import { getAllProductService } from "../../services/productService";
 import Paginate from "../../components/Paginate/Paginate";
 import BreadCrumb from "../../components/Breadcrumb/BreadCrumb";
+import { getAllBrands } from "../../redux/actions/appActions";
 
 const ProductFilter = () => {
   // const [brand, setBrand] = useState("");
   const app = useSelector((state) => state.app);
-  const { type, category } = useParams();
+  const { category, brand } = useParams();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const queryBrand = params.get("hang-san-xuat");
   const queryPrice = params.get("muc-gia");
   const querySort = params.get("sort");
-  const itemsCatProd = findItemsBySlug(app.prodCategories, type);
   const [selectedBrand, setSelectedBrand] = useState([]);
   const [brandArr, setBrandArr] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState([]);
@@ -49,14 +48,15 @@ const ProductFilter = () => {
   useEffect(() => {
     handleInitData();
     // setIsReady(true);
-  }, [app.prodCategories]);
+  }, [app.brands]);
+  const dispatch = useDispatch();
   const handleInitData = () => {
-    const catArr = convertDataSelectFromCat(itemsCatProd);
+    const catArr = convertDataSelectFromCat(app.brands);
     setBrandArr(catArr);
     //khởi tạo giá trị của category hãng sản xuất
-    if (category && catArr.length > 0) {
+    if (brand && catArr.length > 0) {
       const brandselect = [...selectedBrand];
-      brandselect[0] = convertSelectedDataCat(catArr, category);
+      brandselect[0] = convertSelectedDataCat(catArr, brand);
       setSelectedBrand(brandselect);
       if (queryPrice) {
         setSelectedPrice(getSelectedDataFormValue(priceFilterArr, queryPrice));
@@ -96,19 +96,21 @@ const ProductFilter = () => {
   useEffect(() => {
     if (isReady) {
       navigate(
-        `/${type}${createParameter(
+        `/${category}${createParameter(
           selectedBrand,
           selectedPrice,
           sortValue,
-          type
+          category
         )}`
       );
     }
   }, [selectedBrand, selectedPrice, sortValue]);
-
+  useEffect(() => {
+    dispatch(getAllBrands());
+  }, []);
   const serverParams = getServerQuery(
-    type,
     category,
+    brand,
     queryBrand,
     getSelectedDataFormValue(priceFilterArr, queryPrice),
     getSelectedDataFormValue(sortArr, querySort)
@@ -120,18 +122,18 @@ const ProductFilter = () => {
   }, [serverParams, currentPage]);
   const crumbArr = () => {
     const outputArr = [{ title: "Home", path: "/" }];
-    const typeSlug = getCatFromSlug(app.prodCategories, type);
     const categorySlug = getCatFromSlug(app.prodCategories, category);
-    if (typeSlug) {
-      outputArr.push({
-        title: typeSlug?.title,
-        path: `/${typeSlug?.slug}`,
-      });
-    }
+    const brandSlug = getCatFromSlug(app.brands, brand);
     if (categorySlug) {
       outputArr.push({
         title: categorySlug?.title,
-        path: `/${typeSlug?.slug}/${categorySlug.slug}`,
+        path: `/${categorySlug?.slug}`,
+      });
+    }
+    if (brandSlug) {
+      outputArr.push({
+        title: categorySlug?.title,
+        path: `/${categorySlug?.slug}/${brandSlug?.slug}`,
       });
     }
     return outputArr;
@@ -144,7 +146,7 @@ const ProductFilter = () => {
         <SliderConvert imgClassName={"normal__img"} imgArr={imageArr} />
       </div>
       <div className="product__filter-wrapper row">
-        <div className=" col col-12 col-md-6 col-lg-3">
+        <div className=" col col-12 col-md-3 col-lg-3">
           <div className="filter__section">
             <h5 className="filter__section-title">Hãng sản xuất</h5>
             <Select
@@ -165,7 +167,7 @@ const ProductFilter = () => {
             />
           </div>
         </div>
-        <div className="filter__product col col-12 col-md-6 col-lg-9">
+        <div className="filter__product col col-12 col-md-9 col-lg-9">
           <div className="filter__product-wrapper d-flex flex-wrap">
             <div className="col-12">
               <div className="sort__category-wrapper pc_item align-items-center p-3 m-3">
@@ -190,30 +192,30 @@ const ProductFilter = () => {
                 </div>
               </div>
             </div>
-            <div>
-              
-            </div>
+            <div></div>
             {productArr.length > 0 &&
               productArr.map((item, index) => {
                 return (
-                  <ProductCard
-                    key={index}
-                    title={item.title}
-                    imgUrl={item.images && item.images[0]}
-                    price={item.price}
-                    ram={item.ram}
-                    graphics={item.graphics}
-                    hardDrive={item.hardDrive}
-                    screen={item.screen}
-                    weight={item.weight}
-                    hasBtn={true}
-                    cpu={item.cpu}
-                    discount={item.discount}
-                    path={`/${item.type}/${item.category}/${item.slug}`}
-                    slug={item.slug}
-                    _id={item._id}
-                    hasDigitalItem
-                  />
+                  <div className="tab-container">
+                    <ProductCard
+                      key={index}
+                      title={item.title}
+                      imgUrl={item.images && item.images[0]}
+                      price={item.price}
+                      ram={item.ram}
+                      graphics={item.graphics}
+                      hardDrive={item.hardDrive}
+                      screen={item.screen}
+                      weight={item.weight}
+                      hasBtn={true}
+                      cpu={item.cpu}
+                      discount={item.discount}
+                      path={`/${item.category}/${item.brand}/${item.slug}`}
+                      slug={item.slug}
+                      _id={item._id}
+                      hasDigitalItem
+                    />
+                  </div>
                 );
               })}
             <div></div>

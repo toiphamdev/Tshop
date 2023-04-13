@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllProductService } from "../../services/productService";
 import ProductCard from "../ProductCard/ProductCard";
+import "./tabbanner.css";
 
 const TabBanner = ({ query, title, hasDigitalItem = false }) => {
   const [productArr, setProductArr] = useState([]);
@@ -23,7 +24,7 @@ const TabBanner = ({ query, title, hasDigitalItem = false }) => {
         {productArr.length > 0 &&
           productArr.map((item, index) => {
             return (
-              <div key={index}>
+              <div className="tab-container" key={index}>
                 {hasDigitalItem ? (
                   <ProductCard
                     title={item.title}
