@@ -1,1 +1,1 @@
-export const api = "http://localhost:8080/api";
+export const api = "https://tshop-g9fj.onrender.com/api";
